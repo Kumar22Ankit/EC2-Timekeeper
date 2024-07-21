@@ -1,0 +1,36 @@
+import boto3
+import os
+import json
+from datetime import datetime
+
+# AWS credentials and region
+AWS_REGION = 'your_aws_region'
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
+
+# SNS topic ARN
+SNS_TOPIC_ARN = 'arn:aws:sns:your_aws_region:your_account_id:EC2_Instance_Notifications'
+
+# Initialize AWS clients
+sns_client = boto3.client('sns', region_name=AWS_REGION,
+                          aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+# Function to publish SNS message
+def publish_sns_message(subject, message):
+    response = sns_client.publish(
+        TopicArn=SNS_TOPIC_ARN,
+        Subject=subject,
+        Message=message
+    )
+    print(f'Published SNS message to topic {SNS_TOPIC_ARN}: {response["MessageId"]}')
+
+ # Publish SNS notification
+    subject = 'EC2 Instances Stopped'
+    message = 'EC2 instances have been stopped successfully.'
+    publish_sns_message(subject, message)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Stopped instances successfully')
+    }
